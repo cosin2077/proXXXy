@@ -1,12 +1,9 @@
 name: Linux Retrieval
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: '2 2 */3 * *'
+  workflow_dispatch:
 
 jobs:
   run-script:
@@ -35,26 +32,15 @@ jobs:
       run: |
         poetry run python proXXy.py --validate
 
-    - name: Print invalid sources
+    - name: commit 
       run: |
-        cat validated/INVALID.yaml
-      
-    - name: Print valid sources
-      run: |
-        cat validated/VALID.yaml
-
-    - name: HTTP output
-      run: |
-        cat output/HTTP.txt
-
-    - name: HTTPS output
-      run: |
-        cat output/HTTPS.txt
-
-    - name: SOCKS4 output
-      run: |
-        cat output/SOCKS4.txt
-      
-    - name: SOCKS5 output
-      run: |
-        cat output/SOCKS5.txt
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add .
+        git diff --quiet && git diff --staged --quiet || git commit -m "update: $(date '+%Y-%m-%d') data"
+        
+    - name: push
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }} 
