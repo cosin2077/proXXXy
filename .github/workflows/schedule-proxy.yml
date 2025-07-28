@@ -1,10 +1,9 @@
 name: Scheduled Proxy List Update
 
-# 触发条件：每隔2天运行一次
 on:
   schedule:
-    # 使用 cron 表达式，每2天的 UTC 时间 4:03 执行
     - cron: '3 4 */2 * *'
+  workflow_dispatch:
 
 jobs:
   update-proxy-list:
